@@ -1,0 +1,33 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Client Message | BrightWave</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .message-card { max-width: 800px; margin: 40px auto; padding: 28px; }
+        .message-content { padding: 20px; background: #f5f7fa; border-radius: 8px; overflow-wrap: anywhere; }
+        .message-content p { white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <main class="message-card">
+        <h1>Client message</h1>
+
+        <p><strong>Client:</strong> {{ message.name }}</p>
+        <p><strong>Email:</strong> <a href="mailto:{{ message.email }}">{{ message.email }}</a></p>
+        <p><strong>Received:</strong> {{ message.created_at }}</p>
+
+        <section class="message-content">
+            <h2>Enquiry details</h2>
+            <p>{{ message.message }}</p>
+        </section>
+
+        <p>
+            <a href="{{ url_for('admin_dashboard') }}">← Back to dashboard</a>
+        </p>
+    </main>
+</body>
+</html>

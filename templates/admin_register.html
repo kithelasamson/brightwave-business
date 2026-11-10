@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create Administrator | BrightWave</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .admin-card { max-width: 520px; margin: 50px auto; padding: 28px; }
+        .admin-card input { width: 100%; padding: 12px; margin: 8px 0 18px; box-sizing: border-box; }
+        .admin-card button { padding: 12px 20px; cursor: pointer; }
+        .field-errors { color: #b42318; font-size: .9rem; }
+    </style>
+</head>
+<body>
+    <main class="admin-card">
+        <h1>Create the administrator account</h1>
+        <p>This registration page is available only until the first admin account is created.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <p class="flash {{ category }}">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <label for="username">{{ form.username.label.text }}</label>
+            {{ form.username(id="username", autocomplete="username", required=true) }}
+            {% for error in form.username.errors %}
+                <p class="field-errors">{{ error }}</p>
+            {% endfor %}
+
+            <label for="password">{{ form.password.label.text }}</label>
+            {{ form.password(id="password", autocomplete="new-password", required=true) }}
+            {% for error in form.password.errors %}
+                <p class="field-errors">{{ error }}</p>
+            {% endfor %}
+
+            <p>Password requirements: at least 8 characters, uppercase and lowercase letters, a number, and a symbol.</p>
+
+            <label for="confirm_password">{{ form.confirm_password.label.text }}</label>
+            {{ form.confirm_password(id="confirm_password", autocomplete="new-password", required=true) }}
+            {% for error in form.confirm_password.errors %}
+                <p class="field-errors">{{ error }}</p>
+            {% endfor %}
+
+            {{ form.submit() }}
+        </form>
+
+        <p><a href="{{ url_for('home') }}">Return to website</a></p>
+    </main>
+</body>
+</html>

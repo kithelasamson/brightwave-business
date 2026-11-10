@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Enquiries Dashboard | BrightWave</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body { padding: 24px; }
+        .dashboard { max-width: 1200px; margin: auto; }
+        .header, .stats, .filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .stats { margin: 24px 0; }
+        .stat {
+            flex: 1;
+            min-width: 150px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+        .stat strong { display: block; font-size: 1.8rem; }
+        .filters { justify-content: flex-start; margin: 20px 0; }
+        .filters input, .filters select, .filters button {
+            padding: 10px;
+        }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        .unread { font-weight: bold; }
+        .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .actions a, .actions button {
+            padding: 8px 10px;
+            cursor: pointer;
+        }
+        .status-read { color: #18794e; }
+        .status-unread { color: #b54708; }
+        .export-link { display: inline-block; padding: 10px; }
+    </style>
+</head>
+<body>
+<main class="dashboard">
+    <header class="header">
+        <div>
+            <h1>Client enquiries</h1>
+            <p>Administrator: <strong>{{ admin_username }}</strong></p>
+        </div>
+
+        <form method="POST" action="{{ url_for('admin_logout') }}">
+            {{ logout_form.hidden_tag() }}
+            {{ logout_form.submit() }}
+        </form>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <p class="flash {{ category }}">{{ message }}</p>
+        {% endfor %}
+    {% endwith %}
+
+    <section class="stats">
+        <div class="stat">
+            <span>Total enquiries</span>
+            <strong>{{ total }}</strong>
+        </div>
+        <div class="stat">
+            <span>Unread enquiries</span>
+            <strong>{{ unread }}</strong>
+        </div>
+        <div class="stat">
+            <span>Currently displayed</span>
+            <strong>{{ messages|length }}</strong>
+        </div>
+    </section>
+
+    <form class="filters" method="GET"
+          action="{{ url_for('admin_dashboard') }}">
+        <input type="search" name="q"
+               value="{{ query }}"
+               placeholder="Search name or email"
+               maxlength="100">
+
+        <select name="status">
+            <option value="all"
+                {% if status == "all" %}selected{% endif %}>
+                All messages
+            </option>
+            <option value="unread"
+                {% if status == "unread" %}selected{% endif %}>
+                Unread
+            </option>
+            <option value="read"
+                {% if status == "read" %}selected{% endif %}>
+                Read
+            </option>
+        </select>
+
+        <button type="submit">Search / Filter</button>
+
+        <a class="export-link"
+           href="{{ url_for('export_contacts_csv', q=query, status=status) }}">
+            Export CSV
+        </a>
+    </form>
+
+    {% if messages %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>Email</th>
+                    <th>Date received</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in messages %}
+                <tr class="{% if not item.is_read %}unread{% endif %}">
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.email }}</td>
+                    <td>{{ item.created_at }}</td>
+                    <td>
+                        {% if item.is_read %}
+                            <span class="status-read">Read</span>
+                        {% else %}
+                            <span class="status-unread">Unread</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a href="{{ url_for(
+                                'view_message',
+                                message_id=item.id
+                            ) }}">View message</a>
+
+                            {% if not item.is_read %}
+                            <form method="POST" action="{{ url_for(
+                                'mark_message_read',
+                                message_id=item.id
+                            ) }}">
+                                {{ logout_form.hidden_tag() }}
+                                <button type="submit">
+                                    Mark as read
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <p>No enquiries match your search or filter.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('home') }}">Return to public website</a></p>
+</main>
+</body>
+</html>

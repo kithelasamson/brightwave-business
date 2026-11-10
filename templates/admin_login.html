@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Administrator Login | BrightWave</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .admin-card { max-width: 480px; margin: 50px auto; padding: 28px; }
+        .admin-card input { width: 100%; padding: 12px; margin: 8px 0 18px; box-sizing: border-box; }
+        .admin-card button, .admin-card input[type="submit"] { padding: 12px 20px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <main class="admin-card">
+        <h1>Administrator login</h1>
+        <p>Sign in to access private client enquiries.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <p class="flash {{ category }}">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <label for="username">{{ form.username.label.text }}</label>
+            {{ form.username(id="username", autocomplete="username", required=true) }}
+
+            <label for="password">{{ form.password.label.text }}</label>
+            {{ form.password(id="password", autocomplete="current-password", required=true) }}
+
+            {{ form.submit() }}
+        </form>
+
+        {% if registration_available %}
+            <p>No administrator has been created yet.</p>
+            <a href="{{ url_for('admin_register') }}">Create the first administrator account</a>
+        {% endif %}
+
+        <p><a href="{{ url_for('home') }}">Return to website</a></p>
+    </main>
+</body>
+</html>
